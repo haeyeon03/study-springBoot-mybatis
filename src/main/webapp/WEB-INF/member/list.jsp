@@ -29,6 +29,7 @@
 						<td align="center">${member.memberID}</td>
 						<td align="center">${member.memberPW}</td>
 						<td align="center">${member.memberName}</td>
+					</td>
 					</tr>
 				</c:forEach>
 			</c:otherwise>

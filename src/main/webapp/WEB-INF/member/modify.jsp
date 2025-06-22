@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
+
 <%@ include file="./header.jsp"%>
 <link rel="stylesheet" type="text/css"
 	href="<c:url value='/css/member/modify.css' />">
@@ -27,6 +28,52 @@
 					<td><form:textarea path="memberName" /></td>
 					<td><font color="red"><form:errors path="memberName" /></font></td>
 				</tr>
+				<tr>
+				<td>email - 1</td>
+				<td><form:input path="emailList[0].email"/></td>
+				<td><font color="red"><form:errors
+							path="emailList[0].email" /></font></td>
+			</tr>
+			<tr>
+				<td>email - 2</td>
+				<td><form:input path="emailList[1].email"/></td>
+				<td><font color="red"><form:errors
+							path="emailList[1].email" /></font></td>
+
+			</tr>
+			<tr>
+				<td>auth - 1</td>
+				<td><form:select path="authList[0].auth">
+						<form:option value="" label="=== 선택해주세요 ===" />
+						<form:option value="ROLE_USER" label="사용자" />
+						<form:option value="ROLE_MEMBER" label="회원" />
+						<form:option value="ROLE_ADMIN" label="관리자" />
+					</form:select></td>
+				<td><font color="red"><form:errors
+							path="authList[0].auth" /></font></td>
+			</tr>
+			<tr>
+				<td>auth - 2</td>
+				<td><form:select path="authList[1].auth">
+						<form:option value="" label="=== 선택해주세요 ===" />
+						<form:option value="ROLE_USER" label="사용자" />
+						<form:option value="ROLE_MEMBER" label="회원" />
+						<form:option value="ROLE_ADMIN" label="관리자" />
+					</form:select></td>
+				<td><font color="red"><form:errors
+							path="authList[1].auth" /></font></td>
+			</tr>
+			<tr>
+				<td>auth - 3</td>
+				<td><form:select path="authList[2].auth">
+						<form:option value="" label="=== 선택해주세요 ===" />
+						<form:option value="ROLE_USER" label="사용자" />
+						<form:option value="ROLE_MEMBER" label="회원" />
+						<form:option value="ROLE_ADMIN" label="관리자" />
+					</form:select></td>
+				<td><font color="red"><form:errors
+							path="authList[2].auth" /></font></td>
+			</tr>
 			</table>
 		</form:form>
 

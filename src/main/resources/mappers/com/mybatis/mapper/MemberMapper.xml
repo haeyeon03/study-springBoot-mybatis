@@ -2,25 +2,113 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.mybatis.mapper.MemberMapper">
 
-	<insert id="insert">
-		INSERT INTO MEMBER VALUES(MEMBER_NO_SEQ.NEXTVAL, #{memberID}, #{memberPW}, #{memberName})
-	</insert>
+	<!-- memberMap: Member 객체와 MEMBER 테이블 및 관련 EMAIL 리스트를 매핑하는 resultMap -->
+	<resultMap id="memberMap" type="com.mybatis.domain.Member">
+		<!-- 기본키 매핑 -->
+		<id property="memberNo" column="MEMBER_NO" />
+		<!-- 일반 속성 매핑 -->
+		<result property="memberID" column="MEMBER_ID" />
+		<result property="memberPW" column="MEMBER_PW" />
+		<result property="memberName" column="MEMBER_NAME" />
+		<collection property="emailList"
+			ofType="com.mybatis.domain.MemberEmail" resultMap="emailMap"
+			column="MEMBER_NO" />
+		<collection property="authList"
+			ofType="com.mybatis.domain.MemberAuth" resultMap="authMap"
+			column="MEMBER_NO" />
+	</resultMap>
 
-	<select id="selectByMemberNo"
-		resultType="com.mybatis.domain.Member">
-		SELECT * FROM MEMBER WHERE MEMBER_NO = #{memberNo}
+	<!-- emailMap: MemberEmail 객체와 MEMBER_EMAIL 테이블 매핑 -->
+	<resultMap id="emailMap"
+		type="com.mybatis.domain.MemberEmail">
+		<!-- 이메일 고유 번호 -->
+		<result property="no" column="NO" />
+		<!-- 이메일 주소 -->
+		<result property="email" column="EMAIL" />
+	</resultMap>
+
+	<!-- authMap: MemberAuth 객체와 MEMBER_AUTH 테이블 매핑 -->
+	<resultMap id="authMap" type="com.mybatis.domain.MemberAuth">
+		<!-- 권한 고유 번호 -->
+		<result property="no" column="NO" />
+		<!-- 권한 값 -->
+		<result property="auth" column="AUTH" />
+	</resultMap>
+
+	<!-- selectJoin: MEMBER, MEMBER_EMAIL, MEMBER_AUTH 테이블을 조인하여 memberMap 형태로 
+		결과 반환 (회원 1명의 상세 정보 조회) -->
+	<select id="selectJoin" resultMap="memberMap">
+		SELECT
+		M.MEMBER_NO,
+		M.MEMBER_ID,
+		M.MEMBER_PW,
+		M.MEMBER_NAME,
+		E.NO AS EMAIL_NO,
+		E.EMAIL AS
+		EMAIL,
+		A.NO AS AUTH_NO,
+		A.AUTH AS AUTH
+		FROM
+		MEMBER M
+		LEFT OUTER JOIN
+		MEMBER_EMAIL E ON M.MEMBER_NO = E.NO
+		LEFT OUTER JOIN MEMBER_AUTH A ON
+		M.MEMBER_NO = A.NO
+		WHERE
+		M.MEMBER_NO = #{memberNo}
 	</select>
 
+	<!-- insert: MEMBER 테이블에 새로운 회원 추가 -->
+	<insert id="insert">
+		<selectKey keyProperty="memberNo" resultType="int"
+			order="BEFORE">
+			select MEMBER_NO_SEQ.NEXTVAL FROM DUAL
+		</selectKey>
+		INSERT INTO MEMBER VALUES(#{memberNo}, #{memberID}, #{memberPW},
+		#{memberName})
+	</insert>
+
+	<!-- insertEmail: MEMBER_EMAIL 테이블에 이메일 추가 -->
+	<insert id="insertEmail">
+		INSERT INTO MEMBER_EMAIL VALUES(#{no}, #{email})
+	</insert>
+
+	<!-- insertAuth: MEMBER_AUTH 테이블에 권한 추가 -->
+	<insert id="insertAuth">
+		INSERT INTO MEMBER_AUTH VALUES(#{no}, #{auth})
+	</insert>
+
+	<!-- update: MEMBER 테이블의 회원 정보 수정 -->
 	<update id="update">
-		UPDATE MEMBER SET MEMBER_ID = #{memberID}, MEMBER_PW = #{memberPW} , MEMBER_NAME= #{memberName} WHERE MEMBER_NO = #{memberNo}
+		UPDATE MEMBER
+		SET
+		MEMBER_ID = #{memberID},
+		MEMBER_PW =
+		#{memberPW},
+		MEMBER_NAME = #{memberName}
+		WHERE
+		MEMBER_NO = #{memberNo}
 	</update>
 
+	<!-- delete: MEMBER 테이블에서 회원 삭제 -->
 	<delete id="delete">
 		DELETE FROM MEMBER WHERE MEMBER_NO = #{memberNo}
 	</delete>
 
-	<select id="selectAll"
-		resultType="com.mybatis.domain.Member">
+	<!-- deleteEmail: MEMBER_EMAIL 테이블에서 해당 회원의 이메일 삭제 -->
+	<delete id="deleteEmail">
+		DELETE FROM MEMBER_EMAIL
+		WHERE no = #{memberNo}
+	</delete>
+
+	<!-- deleteAuth: MEMBER_AUTH 테이블에서 해당 회원의 권한 정보 삭제 -->
+	<delete id="deleteAuth">
+		DELETE FROM MEMBER_Auth
+		WHERE no = #{memberNo}
+	</delete>
+
+	<!-- selectAll: MEMBER 테이블 전체 조회 - MEMBER_NO가 0보다 큰 데이터만 - 내림차순 정렬 -->
+	<select id="selectAll" resultType="com.mybatis.domain.Member">
 		<![CDATA[
 			SELECT * FROM MEMBER WHERE MEMBER_NO > 0 ORDER BY MEMBER_NO DESC
 		]]>
